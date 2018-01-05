@@ -171,6 +171,11 @@ namespace DB_FinalProject
             int rowIndex = e.RowIndex;
             DataGridViewRow row = dataGridView3.Rows[rowIndex];
             string id = dataGridView3.Rows[rowIndex].Cells[1].Value.ToString();
+            if (sqlCommandsManager.checkEngineerInSoftware(id))
+            {
+                MessageBox.Show("Error, can't delete Software area because its include engineers");
+                return;
+            }
             sqlCommandsManager.removeData("software_area", id);
             refreshDataGridView("software");
         }
@@ -211,8 +216,10 @@ namespace DB_FinalProject
         //Show project's engineers
         private void button5_Click(object sender, EventArgs e)
         {
-            command = new MySqlCommand($"SELECT id AS project_id ,T12.engineer_id, software_area_id FROM(Select id,engineer_id FROM project as T1 JOIN works as T2 ON T1.id=T2.project_id WHERE T1.id={textBox17.Text} ) as T12 JOIN belongs as T3 ON T12.engineer_id=T3.engineer_id",sqlCommandsManager.conn);
+            //SELECT id AS project_id ,T12.engineer_id, software_area_id FROM(Select id, engineer_id FROM project AS T1 JOIN works AS T2 ON T1.id = T2.project_id WHERE T1.id = {textBox17.Text}) AS T12 JOIN belongs AS T3 ON T12.engineer_id = T3.engineer_id ORDER BY software_area_id DESC;
+            command = new MySqlCommand($"SELECT id AS project_id ,T12.engineer_id, software_area_id FROM(Select id,engineer_id FROM project AS T1 JOIN works AS T2 ON T1.id=T2.project_id WHERE T1.id={textBox17.Text}) AS T12 JOIN belongs AS T3 ON T12.engineer_id=T3.engineer_id",sqlCommandsManager.conn);
             showTable(dataGridView4, command);
+            dataGridView4.Sort(dataGridView4.Columns["software_area_id"],System.ComponentModel.ListSortDirection.Descending);
         }
 
         //show engineer's projects
@@ -442,18 +449,7 @@ namespace DB_FinalProject
             showTable(dataGridView5, command);
         }
 
-        private void textBox23_TextChanged(object sender, EventArgs e)
-        {
-            command = new MySqlCommand($"SELECT id FROM engineer", sqlCommandsManager.conn);
-            DataTable dt = new DataTable();
-            dt.Load(command.ExecuteReader());
-            comboBox5.DataSource = dt.DefaultView;
-            comboBox5.DisplayMember = "name";
-            comboBox5.ValueMember = "id";
-            comboBox5.SelectedIndex = -1;
-        }
-
-        // engineer projects list
+        // projects in specific engineer list for comboBox3
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!string.IsNullOrEmpty(textBox1.Text))
@@ -465,6 +461,21 @@ namespace DB_FinalProject
                 comboBox3.DisplayMember = "name";
                 comboBox3.ValueMember = "project_id";
                 comboBox3.SelectedIndex = -1;
+            }
+        }
+
+        //engineers in specific project list for comboBox5
+        private void comboBox5_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(textBox23.Text))
+            {
+                command = new MySqlCommand($"SELECT engineer_id FROM works WHERE project_id = {textBox23.Text}", sqlCommandsManager.conn);
+                DataTable dt = new DataTable();
+                dt.Load(command.ExecuteReader());
+                comboBox5.DataSource = dt.DefaultView;
+                comboBox5.DisplayMember = "name";
+                comboBox5.ValueMember = "engineer_id";
+                comboBox5.SelectedIndex = -1;
             }
         }
     }

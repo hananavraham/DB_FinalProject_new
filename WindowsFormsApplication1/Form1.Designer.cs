@@ -1223,7 +1223,7 @@ namespace DB_FinalProject
             this.textBox23.Name = "textBox23";
             this.textBox23.Size = new System.Drawing.Size(127, 20);
             this.textBox23.TabIndex = 52;
-            this.textBox23.TextChanged += new System.EventHandler(this.textBox23_TextChanged);
+            this.textBox23.Leave += new System.EventHandler(this.comboBox5_SelectedIndexChanged);
             // 
             // groupBox5
             // 
@@ -1265,6 +1265,7 @@ namespace DB_FinalProject
             // 
             // dataGridView4
             // 
+            this.dataGridView4.AllowUserToOrderColumns = true;
             dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle7.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(177)));

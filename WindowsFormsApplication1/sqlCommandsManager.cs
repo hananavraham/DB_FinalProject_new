@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using System.Windows.Forms;
+using System.Data;
 
 namespace DB_FinalProject
 {
@@ -236,6 +237,22 @@ namespace DB_FinalProject
             }
         }
 
+
+        // check if engineers exists in software area
+        public static bool checkEngineerInSoftware(string softwareID)
+        {
+            MySqlCommand command = conn.CreateCommand();
+            command = new MySqlCommand($"select COUNT(engineer_id) FROM belongs WHERE software_area_id ={softwareID}", sqlCommandsManager.conn);
+
+            // checking if engineers exists in the software area
+            DataTable dt = new DataTable();
+            dt.Load(command.ExecuteReader());
+            if (dt.Rows.Count > 0)      
+                return true;    
+            return false;
+        }
+
+
         //remove data from table
         public static void removeData(string table,string id)
         {
@@ -418,7 +435,7 @@ namespace DB_FinalProject
                     }
                     if (keys[i].Equals("software_name"))
                     {
-                        //create transaction
+                        //create    transaction
                         command.CommandText = $"BEGIN WORK;SELECT id FROM {table} WHERE id = {id} for update;ROLLBACK;UPDATE software_area SET name = '{values[i]}' WHERE id = {id};commit;";
                         command.ExecuteNonQuery();
                     }
